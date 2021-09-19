@@ -55,6 +55,7 @@ class ImdbDataReader(DatasetReader):
         REPLACE_WITH_SPACE = re.compile("(<br\s*/><br\s*/>)|(\-)|(\/)")
         source_sequence = REPLACE_NO_SPACE.sub("", source_sequence)
         source_sequence = REPLACE_WITH_SPACE.sub(" ", source_sequence)
+        print(source_sequence)
         fields: Dict[str, Field] = {}
         tokens = self._tokenizer.tokenize(source_sequence)
         fields['tokens'] = TextField(tokens, self._token_indexers)
