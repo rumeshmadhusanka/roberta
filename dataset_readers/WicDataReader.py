@@ -70,21 +70,25 @@ class WscDatasetReader(DatasetReader):
             options = item['target']["span1_text"] + " , " + item['target']["span2_text"]
             yield self.text_to_instance(item['text'], options, str(item['label']))
 
+    @overrides
     def text_to_instance(
             self, text: str, options: str, label: str = None) -> Optional[Instance]:
         REPLACE_WITH_SPACE = re.compile("\n\t")
+        REPLACE_NO_SPACE = re.compile("[.;:!\'?,\"()\[\]]")
+        text = REPLACE_NO_SPACE.sub("", text)
         text = REPLACE_WITH_SPACE.sub(" ", text)
         text_tokens = self._tokenizer.tokenize(text)[:448]
         option_tokens = self._tokenizer.tokenize(options)[:60]
         tokens = self._tokenizer.add_special_tokens(text_tokens, option_tokens)
+        print(tokens)
         text_field = TextField(tokens, self._token_indexers)
         fields: Dict[str, Field] = {"tokens": text_field}
         if label is not None:
             fields["label"] = LabelField(label)
         return Instance(fields)
 
-# reader = WscDatasetReader()
-# dataset = reader._read('dev')
-# print(next(dataset))
-# # pdb.set_trace()
-# print("type of its first element: ", type(dataset))
+reader = WscDatasetReader()
+dataset = reader._read('dev')
+print(next(dataset))
+# pdb.set_trace()
+print("type of its first element: ", type(dataset))
