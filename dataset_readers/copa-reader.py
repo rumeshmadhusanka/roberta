@@ -24,13 +24,14 @@ class ImdbDataReader(DatasetReader):
                  tokenizer: Tokenizer = None,
                  **kwargs):
         super().__init__(**kwargs)
-        self._url = "https://people.ict.usc.edu/~gordon/downloads/COPA-resources.tgz"
+
         self._tokenizer = tokenizer or WhitespaceTokenizer()
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
-        directory = Path(cached_path(self._url, extract_archive=True))
+        url = "https://people.ict.usc.edu/~gordon/downloads/COPA-resources.tgz"
+        directory = Path(cached_path(url, extract_archive=True))
         if file_path == "dev":
             data = os.path.join(directory, "COPA-resources/datasets", "copa-dev.xml")
         elif file_path == "test":
@@ -47,6 +48,7 @@ class ImdbDataReader(DatasetReader):
             id_at = child.attrib['id']
             asks = child.attrib['asks-for']
             alt = child.attrib['most-plausible-alternative']
+            # yield the necessary values
             yield None
 
     @overrides
