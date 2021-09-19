@@ -1,5 +1,5 @@
 
-local transformer_model = "roberta-base";
+local transformer_model = "roberta-large";
 {
     "dataset_reader": {
         "type": "wsc",
