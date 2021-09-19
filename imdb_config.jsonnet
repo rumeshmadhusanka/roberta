@@ -1,6 +1,6 @@
 {
     "dataset_reader": {
-        "type": "imdb2",
+        "type": "superglue_record",
         "token_indexers": {
             "tokens": {
                 "type": "pretrained_transformer",
