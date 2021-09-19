@@ -41,7 +41,7 @@ local transformer_model = "roberta-large";
     "train_data_path": "train",
     "test_data_path": "dev",
     "trainer": {
-        "num_epochs": 40,
+        "num_epochs": 10,
         "validation_metric": "+accuracy",
 	 "learning_rate_scheduler": {
 	    "type": "slanted_triangular",
