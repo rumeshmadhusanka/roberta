@@ -11,7 +11,7 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import LabelField, TextField, Field
 from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
-from allennlp.data.tokenizers import Token
+from allennlp.data.tokenizers import Token, PretrainedTransformerTokenizer
 from allennlp.data.tokenizers.spacy_tokenizer import SpacyTokenizer
 from allennlp.common.checks import ConfigurationError
 
@@ -38,14 +38,14 @@ class WscDatasetReader(DatasetReader):
 
 
     def __init__(self,
-                 token_indexers: Dict[str, TokenIndexer] = None,
+                 # token_indexers: Dict[str, TokenIndexer] = None,
                  tokenizer: Optional[Tokenizer] = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self._tokenizer = tokenizer or SpacyTokenizer()
-        self._token_indexers = token_indexers or \
-                {"tokens": SingleIdTokenIndexer()}
+        self._tokenizer = tokenizer
+        # self._token_indexers = token_indexers or \
+        #         {"tokens": SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
@@ -78,13 +78,14 @@ class WscDatasetReader(DatasetReader):
         text_tokens = self._tokenizer.tokenize(text)[:448]
         option_tokens = self._tokenizer.tokenize(options)[:60]
         tokens = self._tokenizer.add_special_tokens(text_tokens, option_tokens)
-        text_field = TextField(tokens, token_indexers=self._token_indexers)
+        text_field = TextField(tokens)
         fields: Dict[str, Field] = {"tokens": text_field}
         if label is not None:
             fields["label"] = LabelField(label)
         return Instance(fields)
 
 # reader = WscDatasetReader()
-# dataset = list(reader.read('dev'))
-# pdb.set_trace()
-# print("type of its first element: ", type(dataset[0]))
+# dataset = reader._read('dev')
+# print(next(dataset))
+# # pdb.set_trace()
+# print("type of its first element: ", type(dataset))

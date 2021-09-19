@@ -61,7 +61,7 @@ class ImdbDataReader(DatasetReader):
         fields['label'] = LabelField(target, skip_indexing=True)
         return Instance(fields)
 
-reader = ImdbDataReader()
-dataset = list(reader.read('dev'))
-print("type of its first element: ", type(dataset[0]))
-print("size of dataset: ", len(dataset))
+# reader = ImdbDataReader()
+# dataset = list(reader.read('dev'))
+# print("type of its first element: ", type(dataset[0]))
+# print("size of dataset: ", len(dataset))
