@@ -1,5 +1,5 @@
 
-local transformer_model = "distilroberta-base";
+local transformer_model = "roberta-base";
 {
     "dataset_reader": {
         "type": "wsc",
