@@ -1,17 +1,19 @@
+
+local transformer_model = "roberta-base";
 {
     "dataset_reader": {
-        "type": "imdb2",
+        "type": "wsc",
         "token_indexers": {
             "tokens": {
                 "type": "pretrained_transformer",
                 "max_length": 512,
-                "model_name": "roberta-base"
+                "model_name": transformer_model
             }
         },
         "tokenizer": {
             "type": "pretrained_transformer",
             "max_length": 512,
-            "model_name": "roberta-base"
+            "model_name": transformer_model
         }
     },
     "model": {
@@ -20,26 +22,27 @@
         "seq2vec_encoder": {
             "type": "bert_pooler",
             "dropout": 0.1,
-            "pretrained_model": "roberta-base"
+            "pretrained_model": transformer_model
         },
         "text_field_embedder": {
             "token_embedders": {
                 "tokens": {
                     "type": "pretrained_transformer",
                     "max_length": 512,
-                    "model_name": "roberta-base"
+                    "model_name": transformer_model
                 }
             }
         }
     },
     // "model": {
     //     "type": "transformer_classification_tt",
-    //     "transformer_model": "roberta-base",
+    //     "transformer_model": transformer_model,
     //   },
     "train_data_path": "train",
-    "test_data_path": "test",
+    "test_data_path": "dev",
     "trainer": {
-        "num_epochs": 1,
+        "num_epochs": 4,
+        "validation_metric": "+accuracy",
 	 "learning_rate_scheduler": {
 	    "type": "slanted_triangular",
 	    "cut_frac": 0.06		
@@ -48,7 +51,13 @@
             "type": "huggingface_adamw",
             "lr": 2e-05,
             "weight_decay": 0.1
-        }
+        },
+        "callbacks": [
+            {
+              "type": "console_logger",
+              "should_log_inputs": true
+            }
+          ],
     },
     "evaluate_on_test": true,
     "data_loader": {

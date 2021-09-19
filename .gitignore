@@ -2,3 +2,4 @@ test_output/
 models/__pycache__
 dataset_readers/__pycache__
 output
+venv

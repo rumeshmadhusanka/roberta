@@ -1,53 +1,53 @@
-from typing import Dict, Optional, Iterable, List
-
-import os.path as osp
+import logging
+import os
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
-import tarfile
-from itertools import chain
-
-from overrides import overrides
+from typing import Dict
 
 from allennlp.common.file_utils import cached_path
+from allennlp.data import Instance
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.fields import LabelField, TextField, Field
-from allennlp.data import Instance
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.data.tokenizers import Tokenizer, WhitespaceTokenizer
-from datasets import load_dataset
-import pdb
+from overrides import overrides
 
-@DatasetReader.register('imdb')
+logger = logging.getLogger(__name__)
+
+
+@DatasetReader.register('copa-reader')
 class ImdbDataReader(DatasetReader):
-    TAR_URL = 'https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz'
-    TRAIN_DIR = 'aclImdb/train'
-    TEST_DIR = 'aclImdb/test'
 
     def __init__(self,
                  token_indexers: Dict[str, TokenIndexer] = None,
                  tokenizer: Tokenizer = None,
-                **kwargs):
+                 **kwargs):
         super().__init__(**kwargs)
-
+        self._url = "https://people.ict.usc.edu/~gordon/downloads/COPA-resources.tgz"
         self._tokenizer = tokenizer or WhitespaceTokenizer()
         self._token_indexers = token_indexers or {'tokens': SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
-        if file_path == 'train':
-            temp_dataset = load_dataset('imdb', split='train').shuffle(seed=42)
-            dataset = temp_dataset.train_test_split(test_size=0.2, shuffle=False)['train']
-        elif file_path == 'test':
-            imdb = load_dataset('imdb')
-            dataset = imdb['test']
-        elif file_path == 'dev':
-            temp_dataset = load_dataset('imdb', split='train').shuffle(seed=42)
-            dataset = temp_dataset.train_test_split(test_size=0.2, shuffle=False)['test']
+        directory = Path(cached_path(self._url, extract_archive=True))
+        if file_path == "dev":
+            data = os.path.join(directory, "COPA-resources/datasets", "copa-dev.xml")
+        elif file_path == "test":
+            data = os.path.join(directory, "COPA-resources/datasets", "copa-test.xml")
+        elif file_path == "all":
+            data = os.path.join(directory, "COPA-resources/datasets", "copa-all.xml")
         else:
-            raise ValueError(f"only 'train', 'dev', and 'test' are valid for 'file_path', but '{file_path}' is given.")
-
-        for _, item in enumerate(dataset):
-            yield self.text_to_instance(item['text'], item['label'])
+            raise ValueError(f"only 'all', 'dev', and 'test' are valid for 'file_path', but '{file_path}' is given.")
+        tree = ET.parse(data)
+        for child in tree.getroot():
+            p = child.findtext("p")
+            a1 = child.findtext("a1")
+            a2 = child.findtext("a2")
+            id_at = child.attrib['id']
+            asks = child.attrib['asks-for']
+            alt = child.attrib['most-plausible-alternative']
+            yield None
 
     @overrides
     def text_to_instance(self, source_sequence: str, target: int) -> Instance:
@@ -61,7 +61,9 @@ class ImdbDataReader(DatasetReader):
         fields['label'] = LabelField(target, skip_indexing=True)
         return Instance(fields)
 
+
 reader = ImdbDataReader()
-dataset = list(reader.read('dev'))
-print("type of its first element: ", type(dataset[0]))
-print("size of dataset: ", len(dataset))
+dataset = reader._read("train")
+next(dataset)
+# print("type of its first element: ", type(dataset[0]))
+# print("size of dataset: ", len(dataset))
