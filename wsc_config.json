@@ -1,5 +1,5 @@
 
-local transformer_model = "roberta-large";
+local transformer_model = "roberta-base";
 {
     "dataset_reader": {
         "type": "wsc",
@@ -34,10 +34,6 @@ local transformer_model = "roberta-large";
             }
         }
     },
-    // "model": {
-    //     "type": "transformer_classification_tt",
-    //     "transformer_model": transformer_model,
-    //   },
     "train_data_path": "train",
     "test_data_path": "dev",
     "trainer": {
