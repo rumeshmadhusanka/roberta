@@ -87,8 +87,8 @@ class WscDatasetReader(DatasetReader):
             fields["label"] = LabelField(label)
         return Instance(fields)
 
-reader = WscDatasetReader()
-dataset = reader._read('dev')
-print(next(dataset))
+# reader = WscDatasetReader()
+# dataset = reader._read('dev')
+# print(next(dataset))
 # pdb.set_trace()
-print("type of its first element: ", type(dataset))
+# print("type of its first element: ", type(dataset))
