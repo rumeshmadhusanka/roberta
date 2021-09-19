@@ -81,6 +81,7 @@ class WscDatasetReader(DatasetReader):
         # tokens = self._tokenizer.add_special_tokens(text_tokens, option_tokens)
         print(tokens)
         text_field = TextField(tokens, self._token_indexers)
+        print(text_field)
         fields: Dict[str, Field] = {"tokens": text_field}
         if label is not None:
             fields["label"] = LabelField(label)
