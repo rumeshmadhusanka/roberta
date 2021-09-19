@@ -41,7 +41,7 @@ local transformer_model = "roberta-base";
     "train_data_path": "train",
     "test_data_path": "dev",
     "trainer": {
-        "num_epochs": 4,
+        "num_epochs": 40,
         "validation_metric": "+accuracy",
 	 "learning_rate_scheduler": {
 	    "type": "slanted_triangular",
