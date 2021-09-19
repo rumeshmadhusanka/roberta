@@ -42,9 +42,8 @@ class WscDatasetReader(DatasetReader):
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self._tokenizer = tokenizer or SpacyTokenizer()
-        self._token_indexers = token_indexers or \
-                {"tokens": SingleIdTokenIndexer()}
+        self._tokenizer = tokenizer
+        self._token_indexers = token_indexers
 
     @overrides
     def _read(self, file_path):
