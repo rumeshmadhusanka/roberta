@@ -76,8 +76,8 @@ class WscDatasetReader(DatasetReader):
         REPLACE_NO_SPACE = re.compile("[.;:!\'?,\"()\[\]]")
         text = REPLACE_NO_SPACE.sub("", text)
         text = REPLACE_WITH_SPACE.sub(" ", text)
-        text_tokens = self._tokenizer.tokenize(text)[:448]
-        option_tokens = self._tokenizer.tokenize(options)[:60]
+        text_tokens = self._tokenizer.tokenize(text) #[:448]
+        option_tokens = self._tokenizer.tokenize(options)#[:60]
         tokens = self._tokenizer.add_special_tokens(text_tokens, option_tokens)
         print(tokens)
         text_field = TextField(tokens, self._token_indexers)
