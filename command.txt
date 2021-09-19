@@ -1,0 +1,2 @@
+allennlp train imdb_config.jsonnet -s output/imdb --include-package dataset_readers
+allennlp train config_xsum.jsonnet -s test_output_xsum --include-package dataset_readers --include-package models
