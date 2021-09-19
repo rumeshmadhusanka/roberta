@@ -5,7 +5,6 @@ from allennlp.data import Tokenizer
 from overrides import overrides
 from nltk.tree import Tree
 
-
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import LabelField, TextField, Field
@@ -31,21 +30,21 @@ logger = logging.getLogger(__name__)
 
 TRAIN_VAL_SPLIT_RATIO = 0.9
 
+
 @DatasetReader.register("wsc")
 class WscDatasetReader(DatasetReader):
     TAR_URL = 'https://dl.fbaipublicfiles.com/glue/superglue/data/v2/WSC.zip'
     DIR = "WSC"
 
-
     def __init__(self,
-                 # token_indexers: Dict[str, TokenIndexer] = None,
+                 token_indexers: Dict[str, TokenIndexer] = None,
                  tokenizer: Optional[Tokenizer] = None,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self._tokenizer = tokenizer
-        # self._token_indexers = token_indexers or \
-        #         {"tokens": SingleIdTokenIndexer()}
+        self._tokenizer = tokenizer or SpacyTokenizer()
+        self._token_indexers = token_indexers or \
+                {"tokens": SingleIdTokenIndexer()}
 
     @overrides
     def _read(self, file_path):
@@ -72,13 +71,13 @@ class WscDatasetReader(DatasetReader):
             yield self.text_to_instance(item['text'], options, str(item['label']))
 
     def text_to_instance(
-            self, text: str, options:str, label:str = None) -> Optional[Instance]:
+            self, text: str, options: str, label: str = None) -> Optional[Instance]:
         REPLACE_WITH_SPACE = re.compile("\n\t")
         text = REPLACE_WITH_SPACE.sub(" ", text)
         text_tokens = self._tokenizer.tokenize(text)[:448]
         option_tokens = self._tokenizer.tokenize(options)[:60]
         tokens = self._tokenizer.add_special_tokens(text_tokens, option_tokens)
-        text_field = TextField(tokens)
+        text_field = TextField(tokens, self._token_indexers)
         fields: Dict[str, Field] = {"tokens": text_field}
         if label is not None:
             fields["label"] = LabelField(label)
